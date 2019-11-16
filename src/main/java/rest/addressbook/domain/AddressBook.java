@@ -14,7 +14,7 @@ public class AddressBook {
 
     public AddressBook(AddressBook ab) {
       this.nextId = ab.getNextId();
-      this.personList = new ArrayList<>(personList);
+      this.personList = new ArrayList<Person>(ab.getPersonList());
     }
 
   public AddressBook() {
