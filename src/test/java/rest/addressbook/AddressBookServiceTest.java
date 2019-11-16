@@ -3,8 +3,6 @@ package rest.addressbook;
 import junit.framework.TestCase;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
-import org.graalvm.compiler.nodes.memory.address.AddressNode;
 import org.junit.After;
 import org.junit.Test;
 
