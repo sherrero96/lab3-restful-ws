@@ -23,8 +23,7 @@ import rest.addressbook.domain.AddressBook;
 import rest.addressbook.domain.Person;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 /**
  * A simple test suite.
@@ -47,7 +46,7 @@ public class AddressBookServiceTest {
 		AddressBook ab = new AddressBook();
 		launchServer(ab);
 
-		// Create other address book with the same data
+		// Create other address book
 		AddressBook otherAb = new AddressBook(ab);
 
 		// Request the address book
@@ -63,10 +62,12 @@ public class AddressBookServiceTest {
 		// complete the test to ensure that it is safe and idempotent
 		//////////////////////////////////////////////////////////////////////
 
-		// Check that they're the same
+		// Check its safe
+		// It is safe because the internal data have not been modified during the operation.
 		assertEquals(ab, otherAb);
 
-		// Make a new petition
+		// Check that its idempotent.
+		// Make another request and check how the result is exactly the same.
 		Response otherResponse = client.target("http://localhost:8282/contacts")
 				.request().get();
 		assertEquals(200, otherResponse.getStatus());
@@ -121,8 +122,11 @@ public class AddressBookServiceTest {
 		//////////////////////////////////////////////////////////////////////
 
 		// Check not safe
+		// Post changes the internal data
 		assertNotEquals(ab, otherAb);
 
+		// Check idempotent
+		// Post modifies the server on each request, returning different values.
 		Response otherResponse = client.target("http://localhost:8282/contacts")
 				.request(MediaType.APPLICATION_JSON)
 				.post(Entity.entity(juan, MediaType.APPLICATION_JSON));
@@ -141,6 +145,7 @@ public class AddressBookServiceTest {
 		salvador.setId(ab.nextId());
 		ab.getPersonList().add(salvador);
 		launchServer(ab);
+
 
 		// Prepare data
 		Person juan = new Person();
@@ -170,6 +175,8 @@ public class AddressBookServiceTest {
 		assertEquals(3, mariaUpdated.getId());
 		assertEquals(mariaURI, mariaUpdated.getHref());
 
+		AddressBook otherAb = new AddressBook(ab);
+
 		// Check that the new user exists
 		response = client.target("http://localhost:8282/contacts/person/3")
 				.request(MediaType.APPLICATION_JSON).get();
@@ -185,6 +192,11 @@ public class AddressBookServiceTest {
 		// complete the test to ensure that it is safe and idempotent
 		//////////////////////////////////////////////////////////////////////	
 
+		// Check it is safe
+		// It's safe because it doesn't modify internal values
+		assertEquals(otherAb, ab);
+
+		// Check idempotent
 		// New petition
 		Response otherResponse = client.target("http://localhost:8282/contacts/person/3")
 				.request(MediaType.APPLICATION_JSON).get();
@@ -355,10 +367,6 @@ public class AddressBookServiceTest {
 		// Verify that DELETE /contacts/person/2 is well implemented by the service, i.e
 		// complete the test to ensure that it is idempotent but not safe
 		//////////////////////////////////////////////////////////////////////	
-
-
-
-		// CHeck idempotent
 
 	}
 
