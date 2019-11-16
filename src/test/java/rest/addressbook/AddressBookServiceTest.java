@@ -42,6 +42,9 @@ public class AddressBookServiceTest {
 		AddressBook ab = new AddressBook();
 		launchServer(ab);
 
+		// Create other address book with the same data
+		AddressBook otherAb = new AddressBook(ab);
+
 		// Request the address book
 		Client client = ClientBuilder.newClient();
 		Response response = client.target("http://localhost:8282/contacts")
@@ -54,6 +57,21 @@ public class AddressBookServiceTest {
 		// Verify that GET /contacts is well implemented by the service, i.e
 		// complete the test to ensure that it is safe and idempotent
 		//////////////////////////////////////////////////////////////////////
+
+		// Check that they're the same
+		assertEquals(ab, otherAb);
+
+		// Make a new petition
+		Response otherResponse = client.target("http://localhost:8282/contacts")
+				.request().get();
+		assertEquals(200, otherResponse.getStatus());
+
+		// Check again to see if the data is still the same.
+		assertEquals(ab, otherAb);
+		assertEquals(0, otherResponse.readEntity(AddressBook.class).getPersonList().size());
+
+		// It's safe and idempotent.
+
 	}
 
 	@Test

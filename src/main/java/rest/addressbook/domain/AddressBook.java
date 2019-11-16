@@ -2,6 +2,7 @@ package rest.addressbook.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A really simple Address Book. This class is not thread safe.
@@ -10,6 +11,15 @@ public class AddressBook {
 
   private int nextId = 1;
   private List<Person> personList = new ArrayList<>();
+
+    public AddressBook(AddressBook ab) {
+      this.nextId = ab.getNextId();
+      this.personList = new ArrayList<>(personList);
+    }
+
+  public AddressBook() {
+
+  }
 
   /**
    * The value of next unique identifier.
@@ -46,5 +56,19 @@ public class AddressBook {
     int oldValue = nextId;
     nextId++;
     return oldValue;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AddressBook that = (AddressBook) o;
+    return nextId == that.nextId &&
+            Objects.equals(personList, that.personList);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nextId, personList);
   }
 }
